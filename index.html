@@ -1,0 +1,127 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>טיול משפחתי ברצלונה 2026</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIINfQPD2cTbDrc4fQbQ+FVPpf3zN+TDb2E=" crossorigin="" />
+<style>
+  :root{--ink:#0f172a;--muted:#64748b;--blue:#0284c7;--panel:rgba(255,255,255,.96)}
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html,body{margin:0;width:100%;height:100%;overflow:hidden;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;background:#dbeafe;color:var(--ink)}
+  #map{position:fixed;inset:0;width:100vw;height:100vh;height:100dvh;z-index:1;direction:ltr;background:#dbeafe;touch-action:pan-x pan-y;}
+  .leaflet-container{width:100%!important;height:100%!important;direction:ltr;font-family:inherit;background:#dbeafe;}
+  .leaflet-pane,.leaflet-tile,.leaflet-marker-icon,.leaflet-marker-shadow,.leaflet-tile-container,.leaflet-pane>svg,.leaflet-pane>canvas{position:absolute;left:0;top:0;}
+  .leaflet-tile{max-width:none!important;max-height:none!important;width:256px!important;height:256px!important;}
+  .leaflet-control-attribution{font-size:10px!important;direction:ltr}
+
+  .top-card{position:fixed;z-index:20;top:calc(env(safe-area-inset-top) + 14px);left:16px;right:16px;background:var(--panel);backdrop-filter:blur(16px);border-radius:28px;padding:13px 18px;text-align:center;box-shadow:0 10px 30px rgba(0,0,0,.16);pointer-events:none}
+  .top-card h1{margin:0;font-size:22px;line-height:1.15;font-weight:900;letter-spacing:-.2px}.top-card .sub{margin-top:5px;color:var(--muted);font-size:14px;font-weight:800}
+  .fab-col{position:fixed;z-index:25;left:18px;top:38%;display:flex;flex-direction:column;gap:12px}.fab{width:56px;height:56px;border-radius:50%;border:0;background:rgba(255,255,255,.96);box-shadow:0 9px 24px rgba(0,0,0,.20);font-size:22px;display:flex;align-items:center;justify-content:center;color:#0f172a}.fab.active{background:#111827;color:white}.fab.small{font-size:18px;color:var(--blue)}
+
+  .sheet{position:fixed;z-index:30;left:0;right:0;bottom:0;background:var(--panel);backdrop-filter:blur(18px);border-radius:28px 28px 0 0;box-shadow:0 -12px 35px rgba(0,0,0,.22);padding:10px 18px calc(env(safe-area-inset-bottom) + 14px);height:88px;transition:height .22s ease;direction:rtl;overflow:hidden}.sheet.open{height:min(70vh,620px)}
+  .handle{width:72px;height:7px;background:#dbe3ef;border-radius:999px;margin:0 auto 10px}.sheet-head{display:flex;align-items:center;justify-content:space-between;gap:12px}.sheet-title h2{margin:0;font-size:24px;font-weight:900}.sheet-title p{margin:5px 0 0;color:var(--muted);font-size:14px;font-weight:700}.toggle{width:54px;height:54px;border-radius:50%;border:0;background:#f8fafc;box-shadow:0 7px 18px rgba(0,0,0,.11);color:#0284c7;font-size:22px;flex:0 0 auto}.sheet.open .toggle{transform:rotate(180deg)}
+  .content{height:calc(100% - 82px);overflow:auto;-webkit-overflow-scrolling:touch;padding-top:12px}.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:12px}.stat{background:#f1f5f9;border-radius:17px;padding:12px 8px;text-align:center}.stat b{display:block;font-size:23px}.stat span{display:block;color:var(--muted);font-size:12px;font-weight:900;margin-top:2px}.tabs{display:flex;gap:8px;margin:4px 0 12px;position:sticky;top:0;background:rgba(255,255,255,.96);padding:4px 0;z-index:2}.tab{border:0;border-radius:999px;background:#e2e8f0;padding:10px 14px;font-weight:900;color:#0f172a}.tab.active{background:#111827;color:#fff}.panel{display:none}.panel.active{display:block}
+  .track{display:grid;grid-template-columns:34px 1fr 80px;align-items:center;gap:10px;padding:12px 0;border-bottom:1px solid #e2e8f0}.check{width:24px;height:24px;accent-color:#0ea5e9}.track-name{font-weight:900;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.track-meta{color:var(--muted);font-size:13px;font-weight:800;margin-top:4px}.zoom{border:0;border-radius:999px;background:#eff6ff;color:#1d4ed8;font-weight:900;padding:10px 12px}.poi{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:10px 0;border-bottom:1px solid #e2e8f0}.poi b{font-size:15px}.poi span{font-size:13px;color:#16a34a;font-weight:900}.legend{background:#f8fafc;border:1px solid #e2e8f0;border-radius:16px;padding:12px;margin:6px 0 12px;font-size:13px;color:#475569;font-weight:700}.dot{display:inline-block;width:12px;height:12px;border-radius:999px;margin-left:5px;vertical-align:-1px}.toast{position:fixed;z-index:40;left:16px;right:16px;bottom:calc(env(safe-area-inset-bottom) + 96px);background:#111827;color:#fff;border-radius:18px;padding:12px 16px;text-align:center;font-weight:800;box-shadow:0 10px 28px rgba(0,0,0,.25);opacity:0;transform:translateY(10px);transition:.2s;pointer-events:none}.toast.show{opacity:1;transform:translateY(0)}
+  @media (max-width:380px){.top-card h1{font-size:19px}.top-card .sub{font-size:13px}.sheet-title h2{font-size:22px}.fab{width:52px;height:52px}}
+</style>
+</head>
+<body>
+<div id="map"></div>
+<div class="top-card"><h1>🇪🇸 טיול משפחתי ברצלונה 2026</h1><div class="sub" id="topSub">טוען מסלולים...</div></div>
+<div class="fab-col">
+  <button class="fab small" id="fitBtn" title="התמקד בכל המסלולים">⌖</button>
+  <button class="fab" id="heatBtn" title="Heat Map">🔥</button>
+  <button class="fab" id="poiBtn" title="נקודות עניין">📍</button>
+</div>
+<section class="sheet" id="sheet">
+  <div class="handle"></div>
+  <div class="sheet-head">
+    <div class="sheet-title"><h2>Barcelona 🇪🇸</h2><p>לחץ לפתיחה/סגירה. בלי גרירה.</p></div>
+    <button class="toggle" id="toggleSheet">⌄</button>
+  </div>
+  <div class="content">
+    <div class="stats"><div class="stat"><b id="routesCount">7</b><span>מסלולים</span></div><div class="stat"><b id="distTotal">64.9</b><span>ק״מ</span></div><div class="stat"><b id="gainTotal">499</b><span>מ׳ טיפוס</span></div></div>
+    <div class="tabs"><button class="tab active" data-tab="tracks">מסלולים</button><button class="tab" data-tab="pois">נקודות</button><button class="tab" data-tab="legend">מקרא</button></div>
+    <div class="panel active" id="tracksPanel"><div id="tracksList"></div></div>
+    <div class="panel" id="poisPanel"><div class="legend">נקודות העניין מסומנות כ־Visited לפי המסלולים והמידע שאישרת.</div><div id="poisList"></div></div>
+    <div class="panel" id="legendPanel"><div class="legend"><div><span class="dot" style="background:#ef4444"></span>מסלול פעיל / נבחר</div><div><span class="dot" style="background:#f97316"></span>Heat Map - אזורים עם יותר תנועה</div><div><span class="dot" style="background:#22c55e"></span>נקודת עניין שביקרתם בה</div><br/>כפתור ⌖ ממקד לכל המסלולים. כפתור 🔥 מפעיל שכבת Heat. כפתור 📍 מציג/מסתיר אטרקציות.</div></div>
+  </div>
+</section>
+<div class="toast" id="toast"></div>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+<script>
+(function(){
+  const colors=['#ef4444','#3b82f6','#22c55e','#a855f7','#f97316','#92400e','#ec4899'];
+  const friendly={
+    'ברצלונה (1)':'קאמפ נואו / מערב העיר','ברצלונה (2)':'מסלול עירוני קצר','ברצלונה':'ברצלונה - מסלול קצר',
+    'ברצלונה_מוזיאון_מדע_ותצפית_מבונקרים':'מוזיאון המדע ותצפית הבונקרים',
+    'ברצלונה_סגרדה_פמיליה_בית_החולים_ההיסטורי_סנט_פאו_ושער_הניצחון':'סגרדה פמיליה, סנט פאו ושער הניצחון',
+    'ברצלונה_פארק_גואל_ושכונת_גרסיה':'פארק גואל ושכונת גרסיה',
+    'ברצלונה_רובע_גוטי_ונמל':'הרובע הגותי והנמל'
+  };
+  const pois=[
+    ['פארק גואל',41.4145,2.1527],['שכונת גרסיה',41.4026,2.1567],['סגרדה פמיליה',41.4036,2.1744],['בית החולים סנט פאו',41.4135,2.1744],['שער הניצחון',41.3911,2.1806],['פארק סיוטאדלה',41.3881,2.1875],['הרובע הגותי',41.3839,2.1764],['לה רמבלה',41.3818,2.1722],['לה בוקריה',41.3817,2.1717],['נמל ברצלונה',41.3727,2.1817],['ברצלונטה',41.3790,2.1921],['קאמפ נואו',41.3809,2.1228],['מונז׳ואיק',41.3635,2.1580],['בונקרס דל כרמל',41.4195,2.1618],['CosmoCaixa',41.4132,2.1314]
+  ];
+  let map, tracks=[], trackLayers=[], heatLayers=[], poiLayer=L.layerGroup(), allBounds=null, heatOn=false, poisOn=false;
+  const $=id=>document.getElementById(id);
+  const toast=t=>{const el=$('toast');el.textContent=t;el.classList.add('show');setTimeout(()=>el.classList.remove('show'),1600)};
+  function initMap(){
+    map=L.map('map',{zoomControl:false,preferCanvas:true,attributionControl:true,worldCopyJump:false,zoomSnap:.25});
+    L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19,crossOrigin:true,attribution:'&copy; OpenStreetMap'}).addTo(map);
+    map.setView([41.39,2.16],12);
+    setTimeout(()=>map.invalidateSize(true),250);
+  }
+  function flatCoords(geom){
+    if(!geom) return [];
+    if(geom.type==='LineString') return geom.coordinates.map(c=>[c[1],c[0]]);
+    if(geom.type==='MultiLineString') return geom.coordinates.flat().map(c=>[c[1],c[0]]);
+    return [];
+  }
+  function draw(features){
+    tracks=features.map((f,i)=>({feature:f, name:friendly[f.properties.name]||String(f.properties.name||'מסלול').replaceAll('_',' '), dist:+(f.properties.distance_km||0), gain:+(f.properties.gain_m||0), color:colors[i%colors.length], visible:true, coords:flatCoords(f.geometry)}));
+    let group=[]; trackLayers=[]; heatLayers=[];
+    tracks.forEach((t,i)=>{
+      const heat=L.polyline(t.coords,{color:'#f97316',weight:18,opacity:.22,lineCap:'round',lineJoin:'round'});
+      heatLayers.push(heat);
+      const line=L.polyline(t.coords,{color:t.color,weight:6,opacity:.92,lineCap:'round',lineJoin:'round'}).addTo(map);
+      line.on('click',()=>selectTrack(i));
+      trackLayers.push(line); group.push(line);
+    });
+    allBounds=L.featureGroup(group).getBounds(); if(allBounds.isValid()) map.fitBounds(allBounds.pad(.16),{animate:false});
+    drawPois(); render(); setTimeout(()=>map.invalidateSize(true),300);
+  }
+  function drawPois(){
+    poiLayer.clearLayers();
+    pois.forEach(p=>{
+      const m=L.circleMarker([p[1],p[2]],{radius:7,color:'#15803d',weight:2,fillColor:'#22c55e',fillOpacity:.95});
+      m.bindPopup('<b>'+p[0]+'</b><br/>ביקרתם כאן'); poiLayer.addLayer(m);
+    });
+  }
+  function render(){
+    const dist=tracks.reduce((s,t)=>s+t.dist,0), gain=tracks.reduce((s,t)=>s+t.gain,0);
+    $('routesCount').textContent=tracks.length; $('distTotal').textContent=dist.toFixed(1); $('gainTotal').textContent=Math.round(gain);
+    $('topSub').textContent=`${tracks.length} מסלולים · ${dist.toFixed(1)} ק״מ · ${Math.round(gain)} מ׳ טיפוס`;
+    $('tracksList').innerHTML=tracks.map((t,i)=>`<div class="track"><input class="check" type="checkbox" data-i="${i}" ${t.visible?'checked':''}/><div><div class="track-name" style="color:${t.color}">${t.name}</div><div class="track-meta">${t.dist.toFixed(1)} ק״מ · ${Math.round(t.gain)} מ׳ טיפוס</div></div><button class="zoom" data-zoom="${i}">התמקד</button></div>`).join('');
+    $('poisList').innerHTML=pois.map(p=>`<div class="poi"><b>📍 ${p[0]}</b><span>✓ ביקרנו</span></div>`).join('');
+    document.querySelectorAll('.check').forEach(x=>x.onchange=e=>toggleTrack(+e.target.dataset.i,e.target.checked));
+    document.querySelectorAll('[data-zoom]').forEach(b=>b.onclick=e=>selectTrack(+e.target.dataset.zoom));
+  }
+  function toggleTrack(i,on){tracks[i].visible=on; if(on){trackLayers[i].addTo(map); if(heatOn) heatLayers[i].addTo(map)} else {map.removeLayer(trackLayers[i]); map.removeLayer(heatLayers[i])}}
+  function selectTrack(i){
+    trackLayers.forEach((l,k)=>l.setStyle({weight:k===i?9:5,opacity:k===i?1:.45}));
+    if(trackLayers[i].getBounds().isValid()) map.fitBounds(trackLayers[i].getBounds().pad(.25),{animate:true});
+    toast(tracks[i].name+' · '+tracks[i].dist.toFixed(1)+' ק״מ');
+  }
+  $('fitBtn').onclick=()=>{trackLayers.forEach((l,k)=>l.setStyle({weight:6,opacity:.92})); if(allBounds&&allBounds.isValid()) map.fitBounds(allBounds.pad(.16));};
+  $('heatBtn').onclick=()=>{heatOn=!heatOn; $('heatBtn').classList.toggle('active',heatOn); heatLayers.forEach((h,i)=>{if(heatOn&&tracks[i].visible) h.addTo(map); else map.removeLayer(h)}); trackLayers.forEach(l=>l.bringToFront()); toast(heatOn?'Heat Map פועל':'Heat Map כבוי')};
+  $('poiBtn').onclick=()=>{poisOn=!poisOn; $('poiBtn').classList.toggle('active',poisOn); if(poisOn) poiLayer.addTo(map); else map.removeLayer(poiLayer); toast(poisOn?'נקודות עניין מוצגות':'נקודות עניין מוסתרות')};
+  $('toggleSheet').onclick=()=>{$('sheet').classList.toggle('open'); setTimeout(()=>map.invalidateSize(true),260)};
+  document.querySelectorAll('.tab').forEach(b=>b.onclick=()=>{document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));document.querySelectorAll('.panel').forEach(x=>x.classList.remove('active'));b.classList.add('active');$(b.dataset.tab+'Panel').classList.add('active')});
+  window.addEventListener('orientationchange',()=>setTimeout(()=>map.invalidateSize(true),500));
+  initMap();
+  fetch('tracks.geojson',{cache:'no-store'}).then(r=>{if(!r.ok) throw new Error('no geojson'); return r.json()}).then(j=>draw(j.features||[])).catch(e=>{console.error(e); $('topSub').textContent='לא הצלחתי לטעון tracks.geojson'; toast('בעיה בטעינת המסלולים')});
+})();
+</script>
+</body>
+</html>
