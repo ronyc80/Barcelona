@@ -1,0 +1,20 @@
+{
+  "name": "barcelona-trip-map",
+  "version": "1.0.0",
+  "description": "Barcelona Trip Map - Static website for tracking family trip routes",
+  "scripts": {
+    "dev": "npx serve .",
+    "build": "echo 'Static site - no build needed'"
+  },
+  "keywords": [
+    "barcelona",
+    "map",
+    "trip",
+    "static"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "@vercel/analytics": "^2.0.1"
+  }
+}

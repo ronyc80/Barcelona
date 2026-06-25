@@ -142,5 +142,9 @@ const TRACKS_GEOJSON = {"type":"FeatureCollection","features":[{"type":"Feature"
   initMap(); draw(TRACKS_GEOJSON);
 })();
 </script>
+<script type="module">
+  import { inject } from 'https://cdn.jsdelivr.net/npm/@vercel/analytics@1/dist/index.mjs';
+  inject();
+</script>
 </body>
 </html>
