@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>טיול משפחתי ברצלונה 2026</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIINfQumnbR7A/aH9/AdwE3j9jsfLQqg5c=" crossorigin="" />
+  <style>
+    :root{--ink:#111827;--muted:#64748b;--card:rgba(255,255,255,.94);--line:#e5e7eb;--brand:#0f172a;--blue:#2563eb;--shadow:0 12px 40px rgba(15,23,42,.22)}
+    html,body,#map{height:100%;margin:0} body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;background:#000;color:var(--ink);overflow:hidden;-webkit-tap-highlight-color:transparent} #map{height:100dvh;width:100vw;z-index:1}.leaflet-control-attribution{display:none}.leaflet-control-zoom{display:none}
+    .top-card{position:absolute;z-index:500;top:calc(env(safe-area-inset-top) + 14px);left:18px;right:18px;background:var(--card);border-radius:28px;box-shadow:var(--shadow);padding:15px 18px;text-align:center;backdrop-filter:blur(14px)}
+    .title{font-weight:900;font-size:20px;line-height:1.15}.subtitle{margin-top:6px;color:var(--muted);font-size:14px;font-weight:700;direction:rtl}
+    .fab-stack{position:absolute;z-index:501;left:18px;bottom:calc(env(safe-area-inset-bottom) + 178px);display:flex;flex-direction:column;gap:14px}.fab{width:58px;height:58px;border-radius:50%;border:0;background:var(--card);box-shadow:0 10px 30px rgba(15,23,42,.20);font-size:27px;display:grid;place-items:center;color:#0ea5e9}.fab.active{background:#111827;color:white}.fab.small{font-size:22px}.fab:active{transform:scale(.96)}
+    .sheet{position:absolute;z-index:502;left:0;right:0;bottom:0;height:38dvh;min-height:210px;max-height:82dvh;background:var(--card);border-radius:30px 30px 0 0;box-shadow:0 -18px 50px rgba(15,23,42,.24);backdrop-filter:blur(18px);transition:height .22s ease;padding-bottom:calc(env(safe-area-inset-bottom) + 10px);overflow:hidden}.sheet.collapsed{height:112px;min-height:112px}.handle{width:90px;height:7px;border-radius:9px;background:#cbd5e1;margin:12px auto 8px}.sheet-head{display:flex;align-items:center;justify-content:space-between;padding:0 22px 10px}.sheet-title{font-size:26px;font-weight:900}.hint{font-size:14px;color:var(--muted);margin-top:3px}.collapse{width:54px;height:54px;border-radius:50%;border:0;background:#fff;box-shadow:0 10px 30px rgba(15,23,42,.12);font-size:22px;color:#0ea5e9}.content{height:calc(100% - 90px);overflow:auto;padding:0 22px 24px}.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:8px 0 14px}.stat{background:#f1f5f9;border-radius:20px;padding:13px 8px;text-align:center}.stat b{font-size:24px;display:block}.stat span{font-size:13px;color:var(--muted);font-weight:700}.tabs{display:flex;gap:8px;margin:8px 0 13px;direction:rtl}.tab{border:0;border-radius:18px;background:#e2e8f0;color:#0f172a;font-weight:800;padding:10px 14px}.tab.active{background:#111827;color:white}.panel{display:none}.panel.active{display:block}.route{display:flex;align-items:center;gap:10px;border-top:1px solid var(--line);padding:12px 0;direction:rtl}.swatch{width:16px;height:16px;border-radius:5px;flex:0 0 auto}.route-main{flex:1;min-width:0}.route-name{font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.route-meta{color:var(--muted);font-size:13px;margin-top:3px;direction:rtl}.route button{border:0;background:#eef2ff;color:#1d4ed8;border-radius:14px;padding:9px 10px;font-weight:800}.poi{display:flex;align-items:center;justify-content:space-between;border-top:1px solid var(--line);padding:12px 0;font-weight:800}.legend{position:absolute;z-index:501;right:16px;bottom:calc(env(safe-area-inset-bottom) + 126px);background:var(--card);border-radius:18px;padding:10px 12px;box-shadow:var(--shadow);font-size:13px;display:none;direction:rtl}.legend.show{display:block}.legend-row{display:flex;align-items:center;gap:7px;margin:4px 0}.dot{width:16px;height:8px;border-radius:20px;background:#ef4444}.dot.heat{background:linear-gradient(90deg,#22c55e,#facc15,#f97316,#ef4444)}
+    .toast{position:absolute;z-index:700;left:18px;right:18px;top:calc(env(safe-area-inset-top) + 104px);background:#111827;color:white;border-radius:20px;padding:13px 16px;text-align:center;font-weight:800;box-shadow:var(--shadow);opacity:0;transform:translateY(-10px);transition:.2s}.toast.show{opacity:1;transform:translateY(0)}
+  </style>
+</head>
+<body>
+<div id="map"></div>
+<div class="top-card"><div class="title">🇪🇸 טיול משפחתי ברצלונה 2026</div><div class="subtitle" id="topStats">טוען מסלולים…</div></div>
+<div class="fab-stack">
+  <button class="fab" id="fitBtn" title="התמקד">⌖</button>
+  <button class="fab" id="heatBtn" title="Heat Map">🔥</button>
+  <button class="fab small" id="menuBtn" title="מסלולים">☰</button>
+</div>
+<div class="legend" id="legend"><div class="legend-row"><span class="dot"></span>מסלול נבחר / מודגש</div><div class="legend-row"><span class="dot heat"></span>Heat Map - צפיפות נקודות</div></div>
+<section class="sheet collapsed" id="sheet">
+  <div class="handle" id="handle"></div>
+  <div class="sheet-head"><button class="collapse" id="collapseBtn">⌄</button><div><div class="sheet-title">Barcelona 🇪🇸</div><div class="hint">גרור למעלה/למטה או לחץ לפתיחה</div></div></div>
+  <div class="content">
+    <div class="stats"><div class="stat"><b id="sRoutes">0</b><span>מסלולים</span></div><div class="stat"><b id="sKm">0</b><span>ק״מ</span></div><div class="stat"><b id="sGain">0</b><span>מ׳ טיפוס</span></div></div>
+    <div class="tabs"><button class="tab active" data-tab="routes">מסלולים</button><button class="tab" data-tab="stats">סטטיסטיקות</button><button class="tab" data-tab="poi">נקודות עניין</button></div>
+    <div class="panel active" id="routes"></div>
+    <div class="panel" id="stats"><div class="poi"><span>מרחק כולל</span><span id="stKm"></span></div><div class="poi"><span>טיפוס מצטבר</span><span id="stGain"></span></div><div class="poi"><span>מסלולים</span><span id="stRoutes"></span></div><div class="poi"><span>Heat Map</span><span>כפתור 🔥 במפה</span></div><div class="poi"><span>הסתרת מסלול</span><span>דרך רשימת המסלולים</span></div></div>
+    <div class="panel" id="poi"></div>
+  </div>
+</section>
+<div class="toast" id="toast"></div>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+<script src="https://unpkg.com/leaflet.heat/dist/leaflet-heat.js"></script>
+<script>
+const colors=['#ef4444','#3b82f6','#22c55e','#a855f7','#f97316','#92400e','#ec4899','#14b8a6'];
+const pois=[
+ {name:'סגרדה פמיליה',lat:41.4036,lng:2.1744},{name:'פארק גואל',lat:41.4145,lng:2.1527},{name:'הרובע הגותי',lat:41.3839,lng:2.1763},{name:'שער הניצחון',lat:41.3911,lng:2.1806},{name:'נמל ברצלונה',lat:41.3749,lng:2.1774},{name:'בונקרים דל כרמל',lat:41.4196,lng:2.1619},{name:'גרסיה',lat:41.4024,lng:2.1586},{name:'בית החולים סנט פאו',lat:41.4135,lng:2.1744}
+];
+let map, tracksLayer=L.layerGroup(), heatLayer=null, poiLayer=L.layerGroup(), bounds, allTracks=[], selected=null, heatOn=false;
+function show(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),1800)}
+function km(n){return (Math.round(n*10)/10).toLocaleString('he-IL')}
+function initMap(){map=L.map('map',{zoomControl:false,preferCanvas:true,tap:true});
+ L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19,crossOrigin:true}).addTo(map);
+ tracksLayer.addTo(map); poiLayer.addTo(map); map.setView([41.39,2.16],12);
+}
+function styleFor(i,sel){return {color:colors[i%colors.length],weight:sel?8:6,opacity:sel?1:.92,lineCap:'round',lineJoin:'round'}}
+function buildTrack(f,i){const p=f.properties||{}; const layer=L.geoJSON(f,{style:styleFor(i,false)}); const coords=f.geometry.coordinates; const latlngs=coords.map(c=>[c[1],c[0]]);
+ const rec={feature:f,layer,index:i,name:p.name||`מסלול ${i+1}`,distance:+p.distance_km||0,gain:+p.gain_m||0,visible:true,latlngs};
+ layer.on('click',()=>selectTrack(rec)); layer.bindTooltip(rec.name,{sticky:true,direction:'top'}); tracksLayer.addLayer(layer); return rec;
+}
+function selectTrack(rec){selected=rec; allTracks.forEach(t=>t.layer.setStyle(styleFor(t.index,t===rec))); map.fitBounds(L.latLngBounds(rec.latlngs),{paddingTopLeft:[50,120],paddingBottomRight:[50,170],maxZoom:15}); show(`${rec.name} • ${km(rec.distance)} ק״מ • ${Math.round(rec.gain)} מ׳ טיפוס`); openSheet(false)}
+function makeHeat(){let pts=[]; allTracks.filter(t=>t.visible).forEach(t=>{const step=Math.max(1,Math.floor(t.latlngs.length/600)); for(let i=0;i<t.latlngs.length;i+=step) pts.push([t.latlngs[i][0],t.latlngs[i][1],.55]);});
+ if(heatLayer) map.removeLayer(heatLayer); heatLayer=L.heatLayer(pts,{radius:22,blur:18,maxZoom:17,minOpacity:.35,gradient:{0.25:'#22c55e',0.50:'#facc15',0.75:'#f97316',1:'#ef4444'}}); if(heatOn) heatLayer.addTo(map);
+}
+function renderRoutes(){const el=document.getElementById('routes'); el.innerHTML=''; allTracks.forEach(t=>{const row=document.createElement('div');row.className='route'; row.innerHTML=`<input type="checkbox" ${t.visible?'checked':''} aria-label="הצג"><span class="swatch" style="background:${colors[t.index%colors.length]}"></span><div class="route-main"><div class="route-name">${t.name}</div><div class="route-meta">${km(t.distance)} ק״מ • ${Math.round(t.gain)} מ׳ טיפוס</div></div><button>התמקד</button>`;
+ row.querySelector('input').onchange=e=>{t.visible=e.target.checked; if(t.visible) tracksLayer.addLayer(t.layer); else tracksLayer.removeLayer(t.layer); makeHeat();}; row.querySelector('button').onclick=()=>selectTrack(t); row.querySelector('.route-main').onclick=()=>selectTrack(t); el.appendChild(row);});}
+function renderPOI(){poiLayer.clearLayers(); const el=document.getElementById('poi'); el.innerHTML=''; pois.forEach(p=>{const m=L.marker([p.lat,p.lng]).bindPopup(`<b>${p.name}</b>`); poiLayer.addLayer(m); const row=document.createElement('div'); row.className='poi'; row.innerHTML=`<span>📍 ${p.name}</span><span>✔️</span>`; row.onclick=()=>{map.setView([p.lat,p.lng],16);m.openPopup()}; el.appendChild(row);});}
+function updateStats(){const totalKm=allTracks.reduce((s,t)=>s+t.distance,0), totalGain=allTracks.reduce((s,t)=>s+t.gain,0); document.getElementById('topStats').textContent=`${allTracks.length} מסלולים • ${km(totalKm)} ק״מ • ${Math.round(totalGain)} מ׳ טיפוס`;
+ ['sRoutes','stRoutes'].forEach(id=>document.getElementById(id).textContent=allTracks.length); document.getElementById('sKm').textContent=km(totalKm); document.getElementById('sGain').textContent=Math.round(totalGain).toLocaleString('he-IL'); document.getElementById('stKm').textContent=`${km(totalKm)} ק״מ`; document.getElementById('stGain').textContent=`${Math.round(totalGain).toLocaleString('he-IL')} מ׳`;}
+function openSheet(expand=true){document.getElementById('sheet').classList.toggle('collapsed',!expand)}
+async function load(){initMap(); let data; try{data=await fetch('tracks.geojson',{cache:'no-store'}).then(r=>r.json())}catch(e){try{data=await fetch('barcelona_tracks.geojson',{cache:'no-store'}).then(r=>r.json())}catch(e2){show('לא הצלחתי לטעון tracks.geojson');return}}
+ allTracks=data.features.map(buildTrack); bounds=L.latLngBounds(allTracks.flatMap(t=>t.latlngs)); map.fitBounds(bounds,{paddingTopLeft:[30,130],paddingBottomRight:[30,190],maxZoom:13}); makeHeat(); renderRoutes(); renderPOI(); updateStats(); document.getElementById('legend').classList.add('show'); setTimeout(()=>document.getElementById('legend').classList.remove('show'),3500);
+}
+document.getElementById('fitBtn').onclick=()=>{map.fitBounds(bounds,{paddingTopLeft:[30,130],paddingBottomRight:[30,190],maxZoom:13}); show('כל המסלולים')};
+document.getElementById('heatBtn').onclick=e=>{heatOn=!heatOn; e.currentTarget.classList.toggle('active',heatOn); if(heatLayer){heatOn?heatLayer.addTo(map):map.removeLayer(heatLayer)} document.getElementById('legend').classList.toggle('show',heatOn); show(heatOn?'Heat Map פעיל':'Heat Map כבוי')};
+document.getElementById('menuBtn').onclick=()=>openSheet(true); document.getElementById('collapseBtn').onclick=()=>openSheet(document.getElementById('sheet').classList.contains('collapsed')); document.getElementById('handle').onclick=()=>openSheet(document.getElementById('sheet').classList.contains('collapsed'));
+document.querySelectorAll('.tab').forEach(b=>b.onclick=()=>{document.querySelectorAll('.tab,.panel').forEach(x=>x.classList.remove('active')); b.classList.add('active'); document.getElementById(b.dataset.tab).classList.add('active')});
+let sy=0; const sh=document.getElementById('sheet'); sh.addEventListener('touchstart',e=>sy=e.touches[0].clientY,{passive:true}); sh.addEventListener('touchend',e=>{const dy=e.changedTouches[0].clientY-sy; if(dy<-35)openSheet(true); if(dy>35)openSheet(false)},{passive:true});
+load();
+</script>
+</body>
+</html>
